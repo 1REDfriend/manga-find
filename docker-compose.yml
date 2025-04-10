@@ -11,8 +11,6 @@ services:
       - "35756:35756"
     container_name: manga-finder-web
     restart: unless-stopped
-    depends_on:
-      - cors-proxy
     networks:
       - manga-network
 
