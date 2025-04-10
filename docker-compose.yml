@@ -11,9 +11,3 @@ services:
       - "35756:35756"
     container_name: manga-finder-web
     restart: unless-stopped
-    networks:
-      - manga-network
-
-networks:
-  manga-network:
-    driver: bridge
