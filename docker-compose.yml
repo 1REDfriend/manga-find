@@ -15,13 +15,14 @@ services:
   
   # เว็บเซิร์ฟเวอร์สำหรับแสดงผลหน้าเว็บ
   web-server:
-    image: oven/bun:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.web
     volumes:
       - .:/app
     working_dir: /app
     ports:
       - "35756:35756"
-    command: bun run --hot -p 35756 --smol index.html
     container_name: manga-finder-web
     restart: unless-stopped
     depends_on:
