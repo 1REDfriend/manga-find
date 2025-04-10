@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  manga-find:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "35756:35756"
+    volumes:
+      - /mnt/sdb1/TONG/HOST/manga-find:/app
+    working_dir: /app
+    command: bunx http-server -p 35756
