@@ -10,7 +10,7 @@ services:
       - "35757:35757"
     volumes:
       - ./proxy-server.js:/app/proxy-server.js
-    restart: unless-stopped
+    restart: always
     container_name: manga-finder-cors-proxy
     networks:
       - manga-network
