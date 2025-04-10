@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="img-src * data:; default-src 'self'; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline'; connect-src 'self'; font-src 'self' https://cdnjs.cloudflare.com;">
     <title>Manga Finder - ค้นหามังงะ</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -523,27 +524,6 @@
         </div>
     </div>
 
-    <script id="mangaData" type="application/json">
-        [
-            {
-                "name": "ตัวอย่าง Little Girl x Scoop x Evil Eye",
-                "profile_link": "https://www.oremanga.net/series/little-girl-x-scoop-x-evil-eye/",
-                "chapter": 12,
-                "chapter_count": 24,
-                "link": "https://www.oremanga.net/little-girl-x-scoop-x-evil-eye/little-girl-x-scoop-x-evil-eye-12-1/",
-                "image_url": "https://via.placeholder.com/300x200?text=Little+Girl+x+Scoop+x+Evil+Eye"
-            },
-            {
-                "name": "ตัวอย่าง Kuro no Souzou Shoukanshi – Tenseisha no Hangyaku",
-                "profile_link": "https://www.oremanga.net/series/kuro-no-souzou-shoukanshi-tenseisha-no-hangyaku/",
-                "chapter": 2612,
-                "chapter_count": 27,
-                "link": "https://www.oremanga.net/kuro-no-souzou-shoukanshi-tenseisha-no-hangyaku/kuro-no-souzou-shoukanshi-tenseisha-no-hangyaku-26/",
-                "image_url": "https://via.placeholder.com/300x200?text=Kuro+no+Souzou+Shoukanshi+–+Tenseisha+no+Hangyaku"
-            }
-        ]
-    </script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // ตัวแปรสำหรับเก็บข้อมูลมังงะ
@@ -670,9 +650,15 @@
                 const end = start + itemsPerPage;
                 const mangaToShow = filteredData.slice(start, end);
 
-                mangaGrid.innerHTML = mangaToShow.map(manga => `
+                mangaGrid.innerHTML = mangaToShow.map(manga => {
+                    // สร้าง Image object เพื่อตั้งค่า crossOrigin
+                    const img = new Image();
+                    img.crossOrigin = "anonymous";
+                    img.src = manga.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(manga.name)}`;
+                    
+                    return `
                     <div class="manga-card" onclick="showMangaDetails('${encodeURIComponent(JSON.stringify(manga))}')">
-                        <div class="manga-card-img" style="background-image: url('${manga.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(manga.name)}`}')"></div>
+                        <div class="manga-card-img" style="background-image: url('${img.src}')"></div>
                         <div class="manga-card-content">
                             <h3 class="manga-title">${manga.name}</h3>
                             <div class="manga-info">
@@ -689,7 +675,7 @@
                             </div>
                         </div>
                     </div>
-                `).join('');
+                `}).join('');
             }
 
             // ฟังก์ชันแสดงผล pagination
@@ -764,7 +750,10 @@
                 document.getElementById('modalTitle').textContent = manga.name;
                 
                 // ตั้งค่ารูปภาพ
-                modalImage.style.backgroundImage = `url('${manga.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(manga.name)}`}')`;
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = manga.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(manga.name)}`;
+                modalImage.style.backgroundImage = `url('${img.src}')`;
                 
                 // ตั้งค่ารายละเอียด
                 const modalDetails = document.getElementById('modalDetails');
