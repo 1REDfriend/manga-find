@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   # CORS Proxy Server ด้วย Bun
   cors-proxy:
