@@ -1,6 +1,8 @@
 FROM oven/bun:latest
 
-WORKDIR ./
+WORKDIR /app
+
+COPY . .
 
 # ติดตั้ง http-server ด้วย npm เพราะเสถียรกว่าใน container
 RUN bun install -g http-server

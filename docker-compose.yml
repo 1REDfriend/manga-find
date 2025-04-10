@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/app
+    working_dir: /app
     ports:
       - "35756:35756"
     container_name: manga-finder-web
