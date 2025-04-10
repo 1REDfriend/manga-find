@@ -1,23 +1,9 @@
 services:
-  # CORS Proxy Server ด้วย Bun
-  cors-proxy:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "35757:35757"
-    volumes:
-      - ./proxy-server.js:/app/proxy-server.js
-    restart: unless-stopped
-    container_name: manga-finder-cors-proxy
-    networks:
-      - manga-network
-  
   # เว็บเซิร์ฟเวอร์สำหรับแสดงผลหน้าเว็บ
   web-server:
     build:
       context: .
-      dockerfile: Dockerfile.web
+      dockerfile: Dockerfile
     volumes:
       - .:/app
     working_dir: /app
