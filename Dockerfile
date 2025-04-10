@@ -1,6 +1,6 @@
 FROM oven/bun:latest
 
-WORKDIR /app
+WORKDIR ./
 
 # คัดลอกไฟล์ package.json และ proxy-server.js
 COPY package.json .
