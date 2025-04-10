@@ -546,7 +546,7 @@
             // ฟังก์ชันสำหรับใช้ CORS proxy กับรูปภาพ
             function getProxyImageUrl(originalUrl) {
                 // ใช้ localhost แทนชื่อ service เพื่อหลีกเลี่ยงปัญหา ERR_NAME_NOT_RESOLVED
-                return `https://cors-proxy.supakorn.xyz:35757/proxy-image?url=${encodeURIComponent(originalUrl)}`;
+                return `https://cors-proxy.supakorn.xyz/proxy-image?url=${encodeURIComponent(originalUrl)}`;
                 
                 // กรณีใช้ Service Worker (ปิดไว้เพราะมีปัญหา)
                 // return `/proxy-image?url=${encodeURIComponent(originalUrl)}`;
