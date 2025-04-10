@@ -8,7 +8,7 @@ services:
       - "35757:35757"
     volumes:
       - ./proxy-server.js:/app/proxy-server.js
-    restart: always
+    restart: unless-stopped
     container_name: manga-finder-cors-proxy
     networks:
       - manga-network
@@ -23,7 +23,7 @@ services:
       - "35756:35756"
     command: bun run --hot -p 35756 --smol index.html
     container_name: manga-finder-web
-    restart: always
+    restart: unless-stopped
     depends_on:
       - cors-proxy
     networks:
