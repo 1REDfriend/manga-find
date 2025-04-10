@@ -1,10 +1,16 @@
-FROM oven/bun:1.0.25
+FROM oven/bun:latest
 
 WORKDIR /app
 
-# ติดตั้ง http-server ผ่าน bun
-RUN bun add -g http-server
+# คัดลอกไฟล์ package.json และ proxy-server.js
+COPY package.json .
+COPY proxy-server.js .
 
-EXPOSE 35756
+# ติดตั้ง dependencies ด้วย Bun
+RUN bun install
 
-CMD ["bunx", "http-server", "-p", "35756"]
+# รัน proxy server
+CMD ["bun", "run", "proxy-server.js"]
+
+# เปิด port 35757
+EXPOSE 35757

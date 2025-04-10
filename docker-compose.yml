@@ -1,13 +1,36 @@
-version: '3.8'
+version: '3'
 
 services:
-  manga-find:
+  # CORS Proxy Server ด้วย Bun
+  cors-proxy:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "35756:35756"
+      - "35757:35757"
     volumes:
-      - /mnt/sdb1/TONG/HOST/manga-find:/app
+      - ./proxy-server.js:/app/proxy-server.js
+    restart: unless-stopped
+    container_name: manga-finder-cors-proxy
+    networks:
+      - manga-network
+  
+  # เว็บเซิร์ฟเวอร์สำหรับแสดงผลหน้าเว็บ
+  web-server:
+    image: bunjs/bun:latest
+    volumes:
+      - .:/app
     working_dir: /app
-    command: bunx http-server -p 35756
+    ports:
+      - "35756:35756"
+    command: bun run --hot -p 35756 --smol index.html
+    container_name: manga-finder-web
+    restart: always
+    depends_on:
+      - cors-proxy
+    networks:
+      - manga-network
+
+networks:
+  manga-network:
+    driver: bridge

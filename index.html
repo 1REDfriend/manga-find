@@ -526,11 +526,31 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // ปิดการลงทะเบียน Service Worker เนื่องจากมีปัญหา
+            // if ('serviceWorker' in navigator) {
+            //     window.addEventListener('load', () => {
+            //         navigator.serviceWorker.register('/cors-proxy-sw.js').then(registration => {
+            //             console.log('Service Worker ลงทะเบียนสำเร็จ:', registration.scope);
+            //         }).catch(error => {
+            //             console.log('Service Worker ลงทะเบียนล้มเหลว:', error);
+            //         });
+            //     });
+            // }
+
             // ตัวแปรสำหรับเก็บข้อมูลมังงะ
             let mangaData = [];
             let filteredData = [];
             let currentPage = 1;
             const itemsPerPage = 10; // แสดง 10 เรื่องต่อหน้า
+            
+            // ฟังก์ชันสำหรับใช้ CORS proxy กับรูปภาพ
+            function getProxyImageUrl(originalUrl) {
+                // ใช้ localhost แทนชื่อ service เพื่อหลีกเลี่ยงปัญหา ERR_NAME_NOT_RESOLVED
+                return `http://localhost:35757/proxy-image?url=${encodeURIComponent(originalUrl)}`;
+                
+                // กรณีใช้ Service Worker (ปิดไว้เพราะมีปัญหา)
+                // return `/proxy-image?url=${encodeURIComponent(originalUrl)}`;
+            }
 
             // DOM Elements
             const mangaGrid = document.getElementById('mangaGrid');
@@ -651,14 +671,13 @@
                 const mangaToShow = filteredData.slice(start, end);
 
                 mangaGrid.innerHTML = mangaToShow.map(manga => {
-                    // สร้าง Image object เพื่อตั้งค่า crossOrigin
-                    const img = new Image();
-                    img.crossOrigin = "anonymous";
-                    img.src = manga.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(manga.name)}`;
+                    // ตั้งค่า URL รูปภาพผ่าน proxy เพื่อแก้ปัญหา CORS
+                    const originalImageUrl = manga.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(manga.name)}`;
+                    const proxyImageUrl = getProxyImageUrl(originalImageUrl);
                     
                     return `
                     <div class="manga-card" onclick="showMangaDetails('${encodeURIComponent(JSON.stringify(manga))}')">
-                        <div class="manga-card-img" style="background-image: url('${img.src}')"></div>
+                        <div class="manga-card-img" style="background-image: url('${proxyImageUrl}')"></div>
                         <div class="manga-card-content">
                             <h3 class="manga-title">${manga.name}</h3>
                             <div class="manga-info">
@@ -749,11 +768,10 @@
                 // ตั้งค่าหัวข้อ
                 document.getElementById('modalTitle').textContent = manga.name;
                 
-                // ตั้งค่ารูปภาพ
-                const img = new Image();
-                img.crossOrigin = "anonymous";
-                img.src = manga.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(manga.name)}`;
-                modalImage.style.backgroundImage = `url('${img.src}')`;
+                // ตั้งค่ารูปภาพผ่าน proxy
+                const originalImageUrl = manga.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(manga.name)}`;
+                const proxyImageUrl = getProxyImageUrl(originalImageUrl);
+                modalImage.style.backgroundImage = `url('${proxyImageUrl}')`;
                 
                 // ตั้งค่ารายละเอียด
                 const modalDetails = document.getElementById('modalDetails');
@@ -778,12 +796,19 @@
 
             // โหลดข้อมูลเริ่มต้นจากไฟล์ JSON
             try {
-                mangaData = JSON.parse(document.getElementById('mangaData').textContent);
-                updateStats();
-                filterManga('all');
-                hideInstructions();
+                const mangaDataElement = document.getElementById('mangaData');
+                if (mangaDataElement && mangaDataElement.textContent) {
+                    mangaData = JSON.parse(mangaDataElement.textContent);
+                    updateStats();
+                    filterManga('all');
+                    hideInstructions();
+                } else {
+                    console.log('ไม่พบข้อมูลมังงะเริ่มต้น หรือข้อมูลว่างเปล่า');
+                    emptyState.style.display = 'block';
+                }
             } catch (error) {
                 console.error('Error loading initial manga data:', error);
+                emptyState.style.display = 'block';
             }
         });
     </script>
