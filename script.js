@@ -169,14 +169,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const chapterText = manga.chapter_text || `Chapter ${manga.chapter}`;
             const chapterCount = manga.chapter_count || manga.chapter || 0;
             
+            // แสดงข้อความจำนวนตอนเฉพาะเมื่อมีข้อมูล
+            const chapterCountText = chapterCount ? `ทั้งหมด ${chapterCount} ตอน` : '';
+            
             return `
             <div class="manga-card" onclick="showMangaDetails('${encodeURIComponent(JSON.stringify(manga))}')">
                 <div class="manga-card-img" style="background-image: url('${proxyImageUrl}')"></div>
                 <div class="manga-card-content">
                     <h3 class="manga-title">${manga.name}</h3>
                     <div class="manga-info">
-                        <span>ตอนที่ ${manga.chapter}</span>
-                        <span>ทั้งหมด ${chapterCount} ตอน</span>
+                        <span>ตอนที่ ${manga.chapter || 'N/A'}</span>
+                        <span>${chapterCountText}</span>
                     </div>
                     <div class="card-actions">
                         <a href="${manga.link}" class="card-btn card-btn-primary" target="_blank">
@@ -268,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modalImage.style.backgroundImage = `url('${proxyImageUrl}')`;
         
         // ใช้ข้อมูลที่มี
-        const chapterText = manga.chapter_text || `Chapter ${manga.chapter}`;
+        const chapterText = manga.chapter_text || `Chapter ${manga.chapter || 'N/A'}`;
         const chapterCount = manga.chapter_count || manga.chapter || 0;
         
         // ตั้งค่ารายละเอียด
@@ -276,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modalDetails.innerHTML = `
             <div class="detail-row">
                 <div class="detail-label">จำนวนตอน:</div>
-                <div class="detail-value">${chapterCount} ตอน</div>
+                <div class="detail-value">${chapterCount ? `${chapterCount} ตอน` : 'ไม่ระบุ'}</div>
             </div>
             <div class="detail-row">
                 <div class="detail-label">ตอนล่าสุด:</div>
