@@ -40,6 +40,16 @@
                 <li>คลิกปุ่ม "โหลดไฟล์ JSON" ด้านบนเพื่อเลือกไฟล์ manga_results.json</li>
             </ol>
             
+            <div class="data-format-info">
+                <h4><i class="fas fa-exclamation-circle"></i> ข้อมูลที่รองรับ</h4>
+                <p>ระบบรองรับข้อมูลมังงะจากทั้งสองแหล่ง:</p>
+                <ul>
+                    <li><strong>รูปแบบเก่า:</strong> ข้อมูลจาก oremanga.net (มี chapter_count)</li>
+                    <li><strong>รูปแบบใหม่:</strong> ข้อมูลจาก มังงะญี่ปุ่น.com (มี chapter_text)</li>
+                </ul>
+                <p>ระบบจะแปลงข้อมูลให้อัตโนมัติเพื่อให้แสดงผลได้อย่างถูกต้อง</p>
+            </div>
+            
             <button class="btn" onclick="hideInstructions()">เข้าใจแล้ว</button>
         </div>
 
@@ -78,7 +88,7 @@
             <div class="stat-card">
                 <i class="fas fa-trophy"></i>
                 <div class="stat-value" id="maxChapters">0</div>
-                <div class="stat-label">จำนวนตอนมากที่สุด</div>
+                <div class="stat-label">ตอนล่าสุดมากที่สุด</div>
             </div>
         </div>
 
@@ -90,6 +100,7 @@
             <i class="fas fa-book-reader"></i>
             <h2>ยังไม่มีข้อมูลมังงะ</h2>
             <p>กรุณาโหลดไฟล์ JSON ที่มีข้อมูลมังงะเพื่อแสดงผล</p>
+            <p class="data-source-info">รองรับข้อมูลจาก oremanga.net และ มังงะญี่ปุ่น.com</p>
         </div>
 
         <div class="manga-grid" id="mangaGrid"></div>

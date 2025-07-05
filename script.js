@@ -62,7 +62,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    mangaData = JSON.parse(e.target.result);
+                    const rawData = JSON.parse(e.target.result);
+                    mangaData = normalizeData(rawData);
                     updateStats();
                     filterManga('all');
                     hideInstructions();
@@ -72,6 +73,25 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             reader.readAsText(file);
         }
+    }
+
+    // ฟังก์ชันแปลงข้อมูลให้เป็นรูปแบบมาตรฐาน
+    function normalizeData(rawData) {
+        return rawData.map(manga => {
+            // ตรวจสอบรูปแบบข้อมูล
+            const normalizedManga = { ...manga };
+
+            // กรณีที่เป็นข้อมูลจากเว็บใหม่ (มังงะญี่ปุ่น.com)
+            if (manga.chapter_text && !manga.chapter_count) {
+                normalizedManga.chapter_count = manga.chapter || 0;
+            } 
+            // กรณีที่เป็นข้อมูลจากเว็บเก่า (oremanga.net)
+            else if (!manga.chapter_text && manga.chapter_count) {
+                normalizedManga.chapter_text = `Chapter ${manga.chapter}`;
+            }
+
+            return normalizedManga;
+        });
     }
 
     // ฟังก์ชันซ่อนคำแนะนำ
@@ -85,11 +105,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         totalMangaEl.textContent = mangaData.length;
         
-        const totalChapters = mangaData.reduce((sum, manga) => sum + manga.chapter_count, 0);
+        // ใช้ chapter_count หรือ chapter ตามที่มี
+        const totalChapters = mangaData.reduce((sum, manga) => {
+            const chapterCount = manga.chapter_count || manga.chapter || 0;
+            return sum + chapterCount;
+        }, 0);
+        
         const avgChapters = Math.round(totalChapters / mangaData.length);
         avgChaptersEl.textContent = avgChapters;
 
-        const maxChapters = Math.max(...mangaData.map(manga => manga.chapter_count));
+        // หาตอนล่าสุดที่มากที่สุด (chapter ล่าสุด)
+        const maxChapters = Math.max(...mangaData.map(manga => manga.chapter || 0));
         maxChaptersEl.textContent = maxChapters;
     }
 
@@ -99,7 +125,10 @@ document.addEventListener('DOMContentLoaded', function() {
             filteredData = [...mangaData];
         } else {
             const minChapters = parseInt(filter);
-            filteredData = mangaData.filter(manga => manga.chapter_count >= minChapters);
+            filteredData = mangaData.filter(manga => {
+                const chapterCount = manga.chapter_count || manga.chapter || 0;
+                return chapterCount >= minChapters;
+            });
         }
         currentPage = 1;
         renderMangaGrid();
@@ -136,6 +165,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const originalImageUrl = manga.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(manga.name)}`;
             const proxyImageUrl = getProxyImageUrl(originalImageUrl);
             
+            // ใช้ข้อมูลที่มี
+            const chapterText = manga.chapter_text || `Chapter ${manga.chapter}`;
+            const chapterCount = manga.chapter_count || manga.chapter || 0;
+            
             return `
             <div class="manga-card" onclick="showMangaDetails('${encodeURIComponent(JSON.stringify(manga))}')">
                 <div class="manga-card-img" style="background-image: url('${proxyImageUrl}')"></div>
@@ -143,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h3 class="manga-title">${manga.name}</h3>
                     <div class="manga-info">
                         <span>ตอนที่ ${manga.chapter}</span>
-                        <span>ทั้งหมด ${manga.chapter_count} ตอน</span>
+                        <span>ทั้งหมด ${chapterCount} ตอน</span>
                     </div>
                     <div class="card-actions">
                         <a href="${manga.link}" class="card-btn card-btn-primary" target="_blank">
@@ -234,16 +267,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const proxyImageUrl = getProxyImageUrl(originalImageUrl);
         modalImage.style.backgroundImage = `url('${proxyImageUrl}')`;
         
+        // ใช้ข้อมูลที่มี
+        const chapterText = manga.chapter_text || `Chapter ${manga.chapter}`;
+        const chapterCount = manga.chapter_count || manga.chapter || 0;
+        
         // ตั้งค่ารายละเอียด
         const modalDetails = document.getElementById('modalDetails');
         modalDetails.innerHTML = `
             <div class="detail-row">
                 <div class="detail-label">จำนวนตอน:</div>
-                <div class="detail-value">${manga.chapter_count} ตอน</div>
+                <div class="detail-value">${chapterCount} ตอน</div>
             </div>
             <div class="detail-row">
                 <div class="detail-label">ตอนล่าสุด:</div>
-                <div class="detail-value">ตอนที่ ${manga.chapter}</div>
+                <div class="detail-value">${chapterText}</div>
             </div>
         `;
         
@@ -263,7 +300,8 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) {
                 throw new Error('ไม่สามารถดาวน์โหลดข้อมูลได้');
             }
-            mangaData = await response.json();
+            const rawData = await response.json();
+            mangaData = normalizeData(rawData);
             updateStats();
             filterManga('all');
             hideInstructions();
@@ -277,16 +315,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // โหลดข้อมูลเริ่มต้นจากไฟล์ JSON
     try {
-        const mangaDataElement = document.getElementById('mangaData');
-        if (mangaDataElement && mangaDataElement.textContent) {
-            mangaData = JSON.parse(mangaDataElement.textContent);
-            updateStats();
-            filterManga('all');
-            hideInstructions();
-        } else {
-            console.log('ไม่พบข้อมูลมังงะเริ่มต้น หรือข้อมูลว่างเปล่า');
-            emptyState.style.display = 'block';
-        }
+        fetch('manga_results.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('ไม่พบไฟล์ manga_results.json');
+                }
+                return response.json();
+            })
+            .then(rawData => {
+                mangaData = normalizeData(rawData);
+                updateStats();
+                filterManga('all');
+                hideInstructions();
+            })
+            .catch(error => {
+                console.error('Error loading local manga data:', error);
+                emptyState.style.display = 'block';
+            });
     } catch (error) {
         console.error('Error loading initial manga data:', error);
         emptyState.style.display = 'block';

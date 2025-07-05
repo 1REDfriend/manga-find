@@ -386,10 +386,42 @@ header {
 }
 
 .setup-instructions code {
-    background-color: var(--light);
-    padding: 2px 6px;
+    background-color: #f1f1f1;
+    padding: 3px 6px;
     border-radius: 4px;
     font-family: monospace;
+    font-size: 0.9em;
+}
+
+/* สไตล์สำหรับส่วนข้อมูลที่รองรับ */
+.data-format-info {
+    background-color: #f8f9fa;
+    border-left: 4px solid var(--primary);
+    padding: 15px;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.data-format-info h4 {
+    margin-top: 0;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.data-format-info ul {
+    margin-left: 20px;
+}
+
+.data-format-info li {
+    margin-bottom: 5px;
+}
+
+.data-source-info {
+    color: var(--gray);
+    font-size: 0.9em;
+    margin-top: 10px;
 }
 
 @media (max-width: 768px) {
