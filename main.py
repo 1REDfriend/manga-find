@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 
 class MangaScraper:
     def __init__(self, start_page, end_page, min_chapters, output_file='manga_results.json'):
-        self.base_url = "https://www.oremanga.net/advance-search/page/{}/?title&author&yearx&status&type=Manga&order=popular&genre%5B0%5D=fantasy"
+        self.base_url = "https://www.oremanga.net/advance-search/page/{}/?title=&author=&yearx=&status=&type=&order=title"
         self.start_page = start_page
         self.end_page = end_page
         self.min_chapters = min_chapters
@@ -142,7 +142,7 @@ class MangaScraper:
 if __name__ == "__main__":
     # ตั้งค่าพารามิเตอร์
     start_page = 1  # หน้าเริ่มต้น
-    end_page = 105    # หน้าสุดท้าย
+    end_page = 725    # หน้าสุดท้าย
     min_chapters = 24  # จำนวนตอนขั้นต่ำที่ต้องการ
     
     scraper = MangaScraper(start_page, end_page, min_chapters)
