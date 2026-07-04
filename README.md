@@ -15,6 +15,29 @@ this code can find minimum chapter on oremanga link. And extract to json file, C
 
 you can change url link Oremanga! to fillter it. But only in Oremanga!.
 
+### Kairew support (ใหม่)
+- ใช้ `kairew_scraping.py` เพื่อดึงการ์ตูน/มังงะจาก https://kairew.com
+- จะ **append** เข้า `manga_results.json` เดิม (ไม่ overwrite)
+- ใช้ smart update: ถ้าเรื่องซ้ำและตอนจาก Kairew มากกว่า → อัพเดทอัตโนมัติ
+- ฟอร์แมตตรงตามมาตรฐาน + มี extra fields (writer, view_count, tags, category ฯลฯ)
+- **วิธีรันปกติ** (AUTO mode - แนะนำ):
+  ```bash
+  python kairew_scraping.py
+  # หรือ
+  python kairew_scraping.py --fresh-kairew
+  ```
+  cloudscraper จะไป visit เว็บและดึง token/clearance ใหม่เอง ไม่ต้อง copy xsrf ทุกครั้ง
+
+- **สำคัญ**: `pip install cloudscraper` (ใน .venv)
+
+**คุณสมบัติช่วยเหลือ**:
+- หลังรันสำเร็จจะบันทึก `kairew_cookies.json` อัตโนมัติ (รันครั้งต่อไปใช้ cookies ใหม่จาก server ได้เลย)
+
+**ถ้า auto ยังติด 403** (rare):
+- ลองรันซ้ำ หรือรีเฟรชเบราว์เซอร์แล้วรันใหม่
+- หรือ copy ค่าใหม่ 1 ครั้ง แล้วใช้ flag (ครั้งแรกใช้ hardcoded/flag, หลังจากนั้น persistence ช่วยลด copy)
+- ดูวิธี copy จาก `python kairew_scraping.py --help`
+
 # CORS Proxy สำหรับ Manga Finder
 
 เครื่องมือนี้ช่วยแก้ปัญหา CORS (Cross-Origin Resource Sharing) สำหรับการโหลดรูปภาพจากโดเมนอื่นในแอปพลิเคชัน Manga Finder
