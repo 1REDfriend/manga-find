@@ -5,11 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     const itemsPerPage = 10; // แสดง 10 เรื่องต่อหน้า
     
-    // ฟังก์ชันสำหรับใช้ CORS proxy กับรูปภาพ
-    function getProxyImageUrl(originalUrl) {
-        // ใช้ localhost แทนชื่อ service เพื่อหลีกเลี่ยงปัญหา ERR_NAME_NOT_RESOLVED
-        return `https://cors-proxy.supakorn.xyz/proxy-image?url=${encodeURIComponent(originalUrl)}`;
-    }
 
     // DOM Elements
     const mangaGrid = document.getElementById('mangaGrid');
@@ -161,20 +156,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const mangaToShow = filteredData.slice(start, end);
 
         mangaGrid.innerHTML = mangaToShow.map(manga => {
-            // ตั้งค่า URL รูปภาพผ่าน proxy เพื่อแก้ปัญหา CORS
             const originalImageUrl = manga.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(manga.name)}`;
-            const proxyImageUrl = getProxyImageUrl(originalImageUrl);
             
             // ใช้ข้อมูลที่มี
             const chapterText = manga.chapter_text || `Chapter ${manga.chapter}`;
             const chapterCount = manga.chapter_count || manga.chapter || 0;
-            
-            // แสดงข้อความจำนวนตอนเฉพาะเมื่อมีข้อมูล
             const chapterCountText = chapterCount ? `ทั้งหมด ${chapterCount} ตอน` : '';
             
             return `
             <div class="manga-card" onclick="showMangaDetails('${encodeURIComponent(JSON.stringify(manga))}')">
-                <div class="manga-card-img" style="background-image: url('${proxyImageUrl}')"></div>
+                <div class="manga-card-img" style="background-image: url('${originalImageUrl}')"></div>
                 <div class="manga-card-content">
                     <h3 class="manga-title">${manga.name}</h3>
                     <div class="manga-info">
@@ -262,13 +253,12 @@ document.addEventListener('DOMContentLoaded', function() {
     window.showMangaDetails = function(mangaDataStr) {
         const manga = JSON.parse(decodeURIComponent(mangaDataStr));
         
-        // ตั้งค่าหัวข้อ
         document.getElementById('modalTitle').textContent = manga.name;
         
-        // ตั้งค่ารูปภาพผ่าน proxy
         const originalImageUrl = manga.image_url || `https://via.placeholder.com/300x200?text=${encodeURIComponent(manga.name)}`;
-        const proxyImageUrl = getProxyImageUrl(originalImageUrl);
-        modalImage.style.backgroundImage = `url('${proxyImageUrl}')`;
+        
+        // เปลี่ยนบรรทัดนี้ให้ตั้งค่ารูปจาก originalImageUrl โดยตรง
+        modalImage.style.backgroundImage = `url('${originalImageUrl}')`;
         
         // ใช้ข้อมูลที่มี
         const chapterText = manga.chapter_text || `Chapter ${manga.chapter || 'N/A'}`;
