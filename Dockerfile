@@ -9,4 +9,4 @@ RUN bun install -g http-server
 
 EXPOSE 35756
 
-CMD ["http-server", "-p", "35756"]
+CMD ["http-server", "public", "-p", "35756"]
